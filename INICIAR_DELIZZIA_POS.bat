@@ -69,8 +69,8 @@ cd backend
 start "Delizzia Backend" cmd /k "venv\Scripts\activate.bat && uvicorn app.main:app --reload --port 8000"
 cd ..
 
-echo ⏳ Esperando backend (8 segundos)...
-timeout /t 8 /nobreak >nul
+echo ⏳ Esperando backend (3 segundos)...
+timeout /t 3 /nobreak >nul
 
 REM Verificar Node.js
 npm --version >nul 2>&1
@@ -94,8 +94,8 @@ if not exist "node_modules" (
 echo 🌐 Iniciando Frontend (React)...
 start "Delizzia Frontend" cmd /k "npm run dev"
 
-echo ⏳ Esperando frontend (10 segundos)...
-timeout /t 10 /nobreak >nul
+echo ⏳ Esperando frontend (5 segundos)...
+timeout /t 5 /nobreak >nul
 
 echo 🌍 Abriendo navegador...
 start http://localhost:3000
