@@ -29,7 +29,6 @@ class UserCreate(UserBase):
     
     @field_validator('password')
     @classmethod
-    @classmethod
     def validate_password(cls, v):
         assert len(v) >= 8, 'Password must be at least 8 characters'
         assert any(c.isupper() for c in v), 'Password must contain uppercase letter'

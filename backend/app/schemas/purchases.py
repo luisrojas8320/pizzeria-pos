@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from decimal import Decimal
@@ -171,12 +171,11 @@ class ScheduledItem(BaseModel):
     min_quantity: Decimal = Field(..., gt=0)
     max_quantity: Decimal = Field(..., gt=0)
     
-    @field_validator('max_quantity')
-    @classmethod
-    def validate_max_greater_than_min(cls, v, values):
-        if 'min_quantity' in values and v <= values['min_quantity']:
+    @model_validator(mode='after')
+    def validate_max_greater_than_min(self):
+        if self.max_quantity <= self.min_quantity:
             raise ValueError('Max quantity must be greater than min quantity')
-        return v
+        return self
 
 
 class PurchaseScheduleBase(BaseModel):

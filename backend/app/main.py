@@ -5,10 +5,8 @@ from sqlalchemy.orm import Session
 
 from .core.config import settings
 from .core.database import create_tables, get_db
-# from .core.auth import get_current_user  # Temporarily disabled
-from .api import auth
-# Temporarily disable other imports to isolate the problem
-# from .api import orders, purchases, menu, staff, analytics, customers, platforms
+from .core.auth import get_current_user
+from .api import auth, orders, purchases, menu, staff, analytics, customers, platforms
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -21,12 +19,7 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     """Initialize database tables on startup"""
-    try:
-        create_tables()
-        print("✅ Database tables created successfully")
-    except Exception as e:
-        print(f"❌ Error creating tables: {e}")
-        # Don't fail startup, just log the error
+    create_tables()
 
 # Security
 security = HTTPBearer()
@@ -53,25 +46,24 @@ async def root():
 
 # Health check
 @app.get("/health")
-async def health_check():
-    return {"status": "healthy", "message": "API is running"}
+async def health_check(db: Session = Depends(get_db)):
+    try:
+        # Test database connection
+        db.execute("SELECT 1")
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail="Database connection failed")
 
 
 # Include routers
-try:
-    app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["Authentication"])
-    print("✅ Auth router loaded")
-except Exception as e:
-    print(f"❌ Error loading auth router: {e}")
-
-# Temporarily disable other routers to isolate the problem
-# app.include_router(orders.router, prefix=f"{settings.API_V1_STR}/orders", tags=["Orders"])
-# app.include_router(purchases.router, prefix=f"{settings.API_V1_STR}/purchases", tags=["Purchases"])
-# app.include_router(menu.router, prefix=f"{settings.API_V1_STR}/menu", tags=["Menu"])
-# app.include_router(staff.router, prefix=f"{settings.API_V1_STR}/staff", tags=["Staff"])
-# app.include_router(analytics.router, prefix=f"{settings.API_V1_STR}/analytics", tags=["Analytics"])
-# app.include_router(customers.router, prefix=f"{settings.API_V1_STR}/customers", tags=["Customers"])
-# app.include_router(platforms.router, prefix=f"{settings.API_V1_STR}/platforms", tags=["Platforms"])
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["Authentication"])
+app.include_router(orders.router, prefix=f"{settings.API_V1_STR}/orders", tags=["Orders"])
+app.include_router(purchases.router, prefix=f"{settings.API_V1_STR}/purchases", tags=["Purchases"])
+app.include_router(menu.router, prefix=f"{settings.API_V1_STR}/menu", tags=["Menu"])
+app.include_router(staff.router, prefix=f"{settings.API_V1_STR}/staff", tags=["Staff"])
+app.include_router(analytics.router, prefix=f"{settings.API_V1_STR}/analytics", tags=["Analytics"])
+app.include_router(customers.router, prefix=f"{settings.API_V1_STR}/customers", tags=["Customers"])
+app.include_router(platforms.router, prefix=f"{settings.API_V1_STR}/platforms", tags=["Platforms"])
 
 
 if __name__ == "__main__":
