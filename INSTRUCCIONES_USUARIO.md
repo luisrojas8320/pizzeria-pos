@@ -32,8 +32,14 @@
 
 ### 📊 **Dashboard Principal**
 - **URL:** http://localhost:3000
-- **Usuario:** admin
-- **Contraseña:** admin123
+- **👤 Usuario:** Crear usando script de administrador
+- **🔐 Contraseña:** La que generes durante inicialización
+
+⚠️ **IMPORTANTE**: Debes crear el usuario administrador usando:
+```cmd
+cd backend
+python scripts/create_admin.py
+```
 
 ### 📡 **Documentación API**
 - **URL:** http://localhost:8000/docs

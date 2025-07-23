@@ -88,11 +88,21 @@ function Start-DelizziaPOS {
         Set-Location ..
     }
     
-    # Configurar variables de entorno
+    # Configurar variables de entorno - MÉTODO SEGURO
     if (!(Test-Path "backend\.env")) {
-        Write-ColoredOutput "🗄️ Configurando base de datos SQLite..." "Yellow"
-        Set-Content "backend\.env" "DATABASE_URL=sqlite:///./delizzia_pos.db"
-        Add-Content "backend\.env" "SECRET_KEY=delizzia-secret-key-for-development"
+        Write-ColoredOutput "🔐 Configurando entorno seguro inicial..." "Yellow"
+        if (Test-Path "backend\.env.example") {
+            Copy-Item "backend\.env.example" "backend\.env"
+            Write-ColoredOutput "✅ Configuración copiada desde .env.example" "Green"
+            Write-ColoredOutput "⚠️ IMPORTANTE: Revisa backend\.env para producción" "Yellow"
+        } else {
+            Write-ColoredOutput "🗄️ Creando configuración básica..." "Yellow"
+            Set-Content "backend\.env" "DATABASE_URL=sqlite:///./delizzia_pos.db"
+            Add-Content "backend\.env" "SECRET_KEY=CHANGE_THIS_SECRET_KEY_FOR_PRODUCTION"
+            Add-Content "backend\.env" "ENVIRONMENT=development"
+            Add-Content "backend\.env" "SQL_ECHO=false"
+            Write-ColoredOutput "⚠️ ADVERTENCIA: Usa .env.example como referencia" "Red"
+        }
     }
     
     # Verificar puertos disponibles

@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from typing import Optional
 import os
 
@@ -47,9 +47,15 @@ class Settings(BaseSettings):
     # Redis for caching and celery
     REDIS_URL: str = "redis://localhost:6379/0"
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    # Security settings
+    ENVIRONMENT: str = "development"
+    SQL_ECHO: bool = False
+    
+    model_config = {
+        "env_file": ".env",
+        "case_sensitive": True,
+        "extra": "ignore"
+    }
 
 
 settings = Settings()

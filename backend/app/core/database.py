@@ -7,7 +7,7 @@ from .config import settings
 # Create SQLAlchemy engine
 engine = create_engine(
     settings.DATABASE_URL,
-    echo=True,  # Set to False in production
+    echo=settings.SQL_ECHO,  # Configurable via environment
     future=True
 )
 

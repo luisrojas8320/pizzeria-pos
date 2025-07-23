@@ -21,11 +21,21 @@ if not exist "backend\venv\Scripts\activate.bat" (
     cd ..
 )
 
-REM Configurar base de datos SQLite
+REM Configurar base de datos SQLite - MÉTODO SEGURO
 if not exist "backend\.env" (
-    echo 🗄️ Configurando base de datos...
-    echo DATABASE_URL=sqlite:///./delizzia_pos.db > backend\.env
-    echo SECRET_KEY=delizzia-secret-key-for-development >> backend\.env
+    echo 🔐 Configurando entorno seguro inicial...
+    if exist "backend\.env.example" (
+        copy "backend\.env.example" "backend\.env" >nul
+        echo ✅ Configuración copiada desde .env.example
+        echo ⚠️  IMPORTANTE: Revisa backend\.env para producción
+    ) else (
+        echo 🗄️ Creando configuración básica...
+        echo DATABASE_URL=sqlite:///./delizzia_pos.db > backend\.env
+        echo SECRET_KEY=CHANGE_THIS_SECRET_KEY_FOR_PRODUCTION >> backend\.env
+        echo ENVIRONMENT=development >> backend\.env
+        echo SQL_ECHO=false >> backend\.env
+        echo ⚠️  ADVERTENCIA: Usa .env.example como referencia
+    )
 )
 
 echo 🚀 Iniciando Backend (FastAPI)...
