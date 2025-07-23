@@ -92,18 +92,12 @@ if not exist "node_modules" (
 )
 
 echo 🌐 Iniciando Frontend (React)...
-start "Delizzia Frontend" cmd /k "npm run dev"
+cd /d "%~dp0"
+start "Delizzia Frontend" /B npm run dev
 
-echo ⏳ Esperando que el frontend inicie...
-:wait_frontend
-timeout /t 3 /nobreak >nul
-powershell -Command "try { Invoke-WebRequest -Uri 'http://localhost:3000' -UseBasicParsing -TimeoutSec 1 | Out-Null; exit 0 } catch { exit 1 }" >nul 2>&1
-if errorlevel 1 (
-    echo 🔄 Esperando frontend...
-    goto wait_frontend
-)
+echo ⏳ Esperando frontend (20 segundos)...
+timeout /t 20 /nobreak >nul
 
-echo ✅ Frontend listo!
 echo 🌍 Abriendo navegador...
 start http://localhost:3000
 
