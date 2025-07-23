@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -28,6 +28,7 @@ class UserCreate(UserBase):
     password: str
     
     @field_validator('password')
+    @classmethod
     @classmethod
     def validate_password(cls, v):
         assert len(v) >= 8, 'Password must be at least 8 characters'

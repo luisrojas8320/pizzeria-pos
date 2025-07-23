@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from decimal import Decimal
@@ -33,7 +33,8 @@ class OrderItemBase(BaseModel):
     unit_price: Decimal = Field(..., gt=0)
     special_instructions: Optional[str] = None
     
-    @validator('quantity')
+    @field_validator('quantity')
+    @classmethod
     def validate_quantity(cls, v):
         if v <= 0:
             raise ValueError('Quantity must be positive')
@@ -66,7 +67,8 @@ class OrderBase(BaseModel):
     payment_method: PaymentMethod
     delivery_fee: Decimal = Field(default=Decimal('0'), ge=0)
     
-    @validator('customer_phone')
+    @field_validator('customer_phone')
+    @classmethod
     def validate_phone(cls, v):
         if v and len(v.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')) < 7:
             raise ValueError('Phone number too short')
@@ -76,7 +78,8 @@ class OrderBase(BaseModel):
 class OrderCreate(OrderBase):
     items: List[OrderItemCreate] = Field(..., min_items=1)
     
-    @validator('items')
+    @field_validator('items')
+    @classmethod
     def validate_items(cls, v):
         if not v:
             raise ValueError('Order must have at least one item')

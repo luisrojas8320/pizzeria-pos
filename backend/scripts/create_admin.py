@@ -26,6 +26,7 @@ def generate_secure_password() -> str:
     return secrets.token_urlsafe(16)
 
 
+    @classmethod
 def validate_password(password: str) -> bool:
     """Valida que la contraseña cumple con requisitos de seguridad"""
     if len(password) < 8:

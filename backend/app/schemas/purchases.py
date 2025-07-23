@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from decimal import Decimal
@@ -62,7 +62,8 @@ class PurchaseOrderItemBase(BaseModel):
     expiry_date: Optional[datetime] = None
     notes: Optional[str] = None
     
-    @validator('quantity_ordered', 'unit_cost')
+    @field_validator('quantity_ordered', 'unit_cost')
+    @classmethod
     def validate_positive(cls, v):
         if v <= 0:
             raise ValueError('Value must be positive')
@@ -106,7 +107,8 @@ class PurchaseOrderCreate(PurchaseOrderBase):
     items: List[PurchaseOrderItemCreate] = Field(..., min_items=1)
     shipping_cost: Decimal = Field(default=Decimal('0'), ge=0)
     
-    @validator('items')
+    @field_validator('items')
+    @classmethod
     def validate_items(cls, v):
         if not v:
             raise ValueError('Purchase order must have at least one item')
@@ -169,7 +171,8 @@ class ScheduledItem(BaseModel):
     min_quantity: Decimal = Field(..., gt=0)
     max_quantity: Decimal = Field(..., gt=0)
     
-    @validator('max_quantity')
+    @field_validator('max_quantity')
+    @classmethod
     def validate_max_greater_than_min(cls, v, values):
         if 'min_quantity' in values and v <= values['min_quantity']:
             raise ValueError('Max quantity must be greater than min quantity')
@@ -189,7 +192,8 @@ class PurchaseScheduleBase(BaseModel):
 class PurchaseScheduleCreate(PurchaseScheduleBase):
     scheduled_items: List[ScheduledItem] = Field(..., min_items=1)
     
-    @validator('scheduled_items')
+    @field_validator('scheduled_items')
+    @classmethod
     def validate_scheduled_items(cls, v):
         if not v:
             raise ValueError('Schedule must have at least one item')

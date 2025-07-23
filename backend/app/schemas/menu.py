@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from decimal import Decimal
@@ -52,13 +52,15 @@ class MenuItemBase(BaseModel):
     image_url: Optional[str] = Field(None, max_length=500)
     display_order: int = 0
     
-    @validator('price')
+    @field_validator('price')
+    @classmethod
     def validate_price(cls, v):
         if v <= 0:
             raise ValueError('Price must be positive')
         return v
     
-    @validator('cost')
+    @field_validator('cost')
+    @classmethod
     def validate_cost(cls, v):
         if v < 0:
             raise ValueError('Cost cannot be negative')
