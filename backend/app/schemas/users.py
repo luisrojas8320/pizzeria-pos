@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -16,7 +16,8 @@ class UserBase(BaseModel):
     role: UserRole = UserRole.STAFF
     is_active: bool = True
     
-    @validator('username')
+    @field_validator('username')
+    @classmethod
     def username_alphanumeric(cls, v):
         assert v.isalnum(), 'Username must be alphanumeric'
         assert len(v) >= 3, 'Username must be at least 3 characters'
@@ -26,7 +27,8 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     
-    @validator('password')
+    @field_validator('password')
+    @classmethod
     def validate_password(cls, v):
         assert len(v) >= 8, 'Password must be at least 8 characters'
         assert any(c.isupper() for c in v), 'Password must contain uppercase letter'

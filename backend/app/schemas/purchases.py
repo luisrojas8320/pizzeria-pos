@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, Field, field_validator, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from decimal import Decimal
@@ -22,8 +22,8 @@ class PurchasePriority(str, Enum):
 class SupplierBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     contact_person: Optional[str] = Field(None, max_length=100)
-    phone: Optional[str] = Field(None, regex=r'^\+?[\d\s\-\(\)]{7,20}$')
-    email: Optional[str] = Field(None, regex=r'^[\w\.-]+@[\w\.-]+\.\w+$')
+    phone: Optional[str] = Field(None, pattern=r'^\+?[\d\s\-\(\)]{7,20}$')
+    email: Optional[str] = Field(None, pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     address: Optional[str] = None
     is_active: bool = True
 
@@ -35,8 +35,8 @@ class SupplierCreate(SupplierBase):
 class SupplierUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     contact_person: Optional[str] = Field(None, max_length=100)
-    phone: Optional[str] = Field(None, regex=r'^\+?[\d\s\-\(\)]{7,20}$')
-    email: Optional[str] = Field(None, regex=r'^[\w\.-]+@[\w\.-]+\.\w+$')
+    phone: Optional[str] = Field(None, pattern=r'^\+?[\d\s\-\(\)]{7,20}$')
+    email: Optional[str] = Field(None, pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     address: Optional[str] = None
     is_active: Optional[bool] = None
 

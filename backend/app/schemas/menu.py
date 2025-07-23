@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, Field, field_validator, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from decimal import Decimal

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, Field, field_validator, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from decimal import Decimal
@@ -59,7 +59,7 @@ class OrderItem(OrderItemInDB):
 
 class OrderBase(BaseModel):
     customer_name: str = Field(..., min_length=2, max_length=100)
-    customer_phone: Optional[str] = Field(None, regex=r'^\+?[\d\s\-\(\)]{7,20}$')
+    customer_phone: Optional[str] = Field(None, pattern=r'^\+?[\d\s\-\(\)]{7,20}$')
     customer_address: Optional[str] = None
     platform: Platform
     platform_order_id: Optional[str] = None
