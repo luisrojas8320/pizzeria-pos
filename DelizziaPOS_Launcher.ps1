@@ -78,19 +78,45 @@ function Start-DelizziaPOS {
     Write-Host ""
     Write-ColoredOutput "📦 Preparando entorno de desarrollo..." "Yellow"
     
-    # Configurar entorno virtual
-    if (!(Test-Path "backend\venv")) {
-        Write-ColoredOutput "🔧 Creando entorno virtual por primera vez..." "Yellow"
-        Set-Location backend
-        python -m venv venv
-        Set-Location ..
+    # Preparar entorno Python
+    Write-ColoredOutput "📦 Preparando entorno Python..." "Yellow"
+    Set-Location backend
+    
+    # Verificar si falta python-jose y recrear entorno si es necesario
+    if (Test-Path "venv\Scripts\Activate.ps1") {
+        & "venv\Scripts\Activate.ps1"
+        try {
+            python -c "import jose" 2>$null
+        }
+        catch {
+            Write-ColoredOutput "🔄 Recreando entorno virtual (dependencias faltantes)..." "Yellow"
+            Remove-Item -Recurse -Force "venv" -ErrorAction SilentlyContinue
+        }
+        deactivate 2>$null
     }
     
-    # Siempre actualizar dependencias
-    Write-ColoredOutput "🔄 Verificando y actualizando dependencias de Python..." "Yellow"
-    Set-Location backend
+    # Crear entorno virtual si no existe
+    if (!(Test-Path "venv\Scripts\Activate.ps1")) {
+        Write-ColoredOutput "🆕 Creando nuevo entorno virtual..." "Yellow"
+        python -m venv venv
+    }
+    
+    # Instalar dependencias
+    Write-ColoredOutput "📦 Instalando dependencias Python..." "Yellow"
     & "venv\Scripts\Activate.ps1"
-    pip install -r requirements.txt --quiet
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    
+    # Verificar instalación crítica
+    try {
+        python -c "import jose; print('✅ python-jose instalado correctamente')"
+    }
+    catch {
+        Write-ColoredOutput "❌ Error: python-jose no se pudo instalar" "Red"
+        Read-Host "Presiona Enter para salir"
+        exit
+    }
+    
     Set-Location ..
     
     # Configurar variables de entorno - MÉTODO SEGURO

@@ -11,19 +11,40 @@ cd /d "%~dp0"
 
 echo ⏳ Preparando entorno...
 
-REM Verificar y crear entorno virtual si no existe
-if not exist "backend\venv\Scripts\activate.bat" (
-    echo 📦 Creando entorno virtual por primera vez...
-    cd backend
-    python -m venv venv
-    cd ..
+REM Crear/recrear entorno virtual y dependencias
+echo 📦 Preparando entorno Python...
+cd backend
+
+REM Si existe venv pero falta jose, recrear entorno
+if exist "venv\Scripts\activate.bat" (
+    call venv\Scripts\activate.bat
+    python -c "import jose" 2>nul
+    if errorlevel 1 (
+        echo 🔄 Recreando entorno virtual (dependencias faltantes)...
+        rmdir /s /q venv 2>nul
+    )
+    deactivate 2>nul
 )
 
-REM Siempre actualizar dependencias (necesario para cambios en requirements.txt)
-echo 🔄 Verificando y actualizando dependencias de Python...
-cd backend
+REM Crear entorno virtual si no existe
+if not exist "venv\Scripts\activate.bat" (
+    echo 🆕 Creando nuevo entorno virtual...
+    python -m venv venv
+)
+
+REM Instalar dependencias
+echo 📦 Instalando dependencias Python...
 call venv\Scripts\activate.bat
-pip install -r requirements.txt --quiet
+pip install --upgrade pip
+pip install -r requirements.txt
+
+REM Verificar instalación crítica
+python -c "import jose; print('✅ python-jose instalado correctamente')" || (
+    echo ❌ Error: python-jose no se pudo instalar
+    pause
+    exit /b 1
+)
+
 cd ..
 
 REM Configurar base de datos SQLite - MÉTODO SEGURO
