@@ -78,15 +78,20 @@ function Start-DelizziaPOS {
     Write-Host ""
     Write-ColoredOutput "📦 Preparando entorno de desarrollo..." "Yellow"
     
-    # Configurar backend
+    # Configurar entorno virtual
     if (!(Test-Path "backend\venv")) {
         Write-ColoredOutput "🔧 Creando entorno virtual por primera vez..." "Yellow"
         Set-Location backend
         python -m venv venv
-        & "venv\Scripts\Activate.ps1"
-        pip install -r requirements.txt
         Set-Location ..
     }
+    
+    # Siempre actualizar dependencias
+    Write-ColoredOutput "🔄 Verificando y actualizando dependencias de Python..." "Yellow"
+    Set-Location backend
+    & "venv\Scripts\Activate.ps1"
+    pip install -r requirements.txt --quiet
+    Set-Location ..
     
     # Configurar variables de entorno - MÉTODO SEGURO
     if (!(Test-Path "backend\.env")) {

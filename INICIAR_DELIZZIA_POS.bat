@@ -11,15 +11,20 @@ cd /d "%~dp0"
 
 echo ⏳ Preparando entorno...
 
-REM Verificar si existe el entorno virtual
+REM Verificar y crear entorno virtual si no existe
 if not exist "backend\venv\Scripts\activate.bat" (
     echo 📦 Creando entorno virtual por primera vez...
     cd backend
     python -m venv venv
-    call venv\Scripts\activate.bat
-    pip install -r requirements.txt
     cd ..
 )
+
+REM Siempre actualizar dependencias (necesario para cambios en requirements.txt)
+echo 🔄 Verificando y actualizando dependencias de Python...
+cd backend
+call venv\Scripts\activate.bat
+pip install -r requirements.txt --quiet
+cd ..
 
 REM Configurar base de datos SQLite - MÉTODO SEGURO
 if not exist "backend\.env" (
